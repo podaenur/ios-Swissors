@@ -10,6 +10,11 @@ import UIKit
 
 public extension UIView {
     
+    enum RoundingType {
+        case circle
+        case custom(CGFloat)
+    }
+    
     //MARK: - Public
     
     public static func sw_fullFrameConstraints(for superView: UIView, subView: UIView) -> [NSLayoutConstraint] {
@@ -62,6 +67,22 @@ public extension UIView {
         subview.translatesAutoresizingMaskIntoConstraints = false
         addSubview(subview)
         NSLayoutConstraint.activate(constraints)
+    }
+    
+    public func sw_round(by type: RoundingType, masked isMasked: Bool? = nil) {
+        let radius: CGFloat
+        switch type {
+        case .circle:
+            precondition(bounds.size.width == bounds.size.height, "Failure to perform circle rounding. Width and height must be equal.")
+            radius = min(bounds.width, bounds.height) / 2
+        case .custom(let r):
+            radius = r
+        }
+        
+        sw_round(corners: .allCorners, with: radius)
+        if let isMasked = isMasked {
+            layer.masksToBounds = isMasked
+        }
     }
     
     public func sw_round(corners: UIRectCorner, with radius: CGFloat) {
